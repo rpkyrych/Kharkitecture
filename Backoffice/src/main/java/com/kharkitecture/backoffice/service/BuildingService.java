@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BookService {
+public class BuildingService {
     private BuildingDAO buildingDAO;
 
     @Autowired
-    public BookService(BuildingDAO buildingDAO) {
+    public BuildingService(BuildingDAO buildingDAO) {
         this.buildingDAO = buildingDAO;
     }
 
