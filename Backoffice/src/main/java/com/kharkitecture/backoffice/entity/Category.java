@@ -7,21 +7,17 @@ import java.util.Objects;
 @Entity
 @Table(name = "category")
 public class Category {
-    private static long nextId;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String characteristic;
     @ManyToMany(targetEntity = Building.class)
     private List<Building> buildingList;
 
-    public Category(String characteristic) {
-        this.id = ++nextId;
-        this.characteristic = characteristic;
+    public Category() {
     }
 
-    public Category(long id, String characteristic) {
-        this.id = id;
+    public Category(String characteristic) {
         this.characteristic = characteristic;
     }
 

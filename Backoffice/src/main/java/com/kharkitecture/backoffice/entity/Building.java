@@ -9,9 +9,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "building")
 public class Building {
-    private static long nextId;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String description;
@@ -20,42 +19,21 @@ public class Building {
     @ManyToMany(targetEntity = Category.class)
     private List<Category> categories;
 
+    public Building() {
+    }
+
     public Building(String name, String description) {
-        this.id = ++nextId;
         this.name = name;
         this.description = description;
     }
 
     public Building(String name, String description, List<Photo> photos) {
-        this.id = ++nextId;
         this.name = name;
         this.description = description;
         this.photos = photos;
     }
 
     public Building(String name, String description, List<Photo> photos, List<Category> categories) {
-        this.id = ++nextId;
-        this.name = name;
-        this.description = description;
-        this.photos = photos;
-        this.categories = categories;
-    }
-
-    public Building(long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
-
-    public Building(long id, String name, String description, List<Photo> photos) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.photos = photos;
-    }
-
-    public Building(long id, String name, String description, List<Photo> photos, List<Category> categories) {
-        this.id = id;
         this.name = name;
         this.description = description;
         this.photos = photos;

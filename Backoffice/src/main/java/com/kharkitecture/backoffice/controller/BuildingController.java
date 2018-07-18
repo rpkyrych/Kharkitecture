@@ -2,6 +2,7 @@ package com.kharkitecture.backoffice.controller;
 
 import com.kharkitecture.backoffice.entity.Building;
 import com.kharkitecture.backoffice.service.BookService;
+import org.apache.logging.log4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +15,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping("/building")
 public class BuildingController {
     private static final String BUILDING_PAGE = "/building";
+    private static final Marker DB_MARKER = MarkerManager.getMarker("DATABASE");
     private BookService bookService;
+    private Logger logger;
 
     @Autowired
     public BuildingController(BookService bookService) {
         this.bookService = bookService;
+        this.logger = LogManager.getLogger(this.getClass());
     }
 
     @RequestMapping(value = "/", method = GET)
@@ -29,7 +33,11 @@ public class BuildingController {
 
     @RequestMapping(value = "/{id}", method = GET)
     public String getBuilding(@PathVariable long id, Model model) {
-        model.addAttribute("building", bookService.getBuilding(id));
+        try {
+            model.addAttribute("building", bookService.getBuilding(id));
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.ERROR, DB_MARKER, "Finding building in db exception.", e);
+        }
         return BUILDING_PAGE;
     }
 

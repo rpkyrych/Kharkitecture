@@ -21,12 +21,12 @@ public class BookService {
         return buildingDAO.findAll();
     }
 
-    public Building getBuilding(long id) {
+    public Building getBuilding(long id) throws ClassNotFoundException {
         Optional<Building> optionalBuilding = buildingDAO.findById(id);
         if (optionalBuilding.isPresent()) {
             return optionalBuilding.get();
         }
-        return null;
+        else{ throw new ClassNotFoundException("Building with such id not found!");}
     }
 
     public void update(Building editedBuilding) {

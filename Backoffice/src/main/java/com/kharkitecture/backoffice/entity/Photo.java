@@ -6,20 +6,22 @@ import java.util.Objects;
 @Entity
 @Table(name = "photo")
 public class Photo {
-    private static long nextId;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String url;
+    private String image;
     @ManyToOne(targetEntity = Building.class)
     private Building building;
 
-    public Photo(String url) {
-        this.url = url;
+    public Photo() {
     }
 
-    public Photo(String url, Building building) {
-        this.id = ++nextId;
-        this.url = url;
+    public Photo(String image) {
+        this.image = image;
+    }
+
+    public Photo(String image, Building building) {
+        this.image = image;
         this.building = building;
     }
 
@@ -31,12 +33,12 @@ public class Photo {
         this.id = id;
     }
 
-    public String getUrl() {
-        return url;
+    public String getImage() {
+        return image;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Building getBuilding() {
@@ -53,12 +55,12 @@ public class Photo {
         if (!(o instanceof Photo)) return false;
         Photo photo = (Photo) o;
         return id == photo.id &&
-                Objects.equals(url, photo.url);
+                Objects.equals(image, photo.image);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, url);
+        return Objects.hash(id, image);
     }
 }
