@@ -2,6 +2,7 @@ package com.kharkitecture.backoffice.entity;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "category")
@@ -46,5 +47,20 @@ public class Category {
 
     public void setBuildingList(List<Building> buildingList) {
         this.buildingList = buildingList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Category)) return false;
+        Category category = (Category) o;
+        return id == category.id &&
+                Objects.equals(characteristic, category.characteristic);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, characteristic);
     }
 }

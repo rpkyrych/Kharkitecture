@@ -3,34 +3,41 @@ package com.kharkitecture.backoffice.service;
 import com.kharkitecture.backoffice.dao.BuildingDAO;
 import com.kharkitecture.backoffice.entity.Building;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookService {
-    @Autowired
-    @Qualifier("hibernate")
     private BuildingDAO buildingDAO;
 
+    @Autowired
+    public BookService(BuildingDAO buildingDAO) {
+        this.buildingDAO = buildingDAO;
+    }
+
     public List<Building> getBuildings() {
-        return buildingDAO.getBuildingsList();
+        return buildingDAO.findAll();
     }
 
     public Building getBuilding(long id) {
-        return buildingDAO.get(id);
+        Optional<Building> optionalBuilding = buildingDAO.findById(id);
+        if (optionalBuilding.isPresent()) {
+            return optionalBuilding.get();
+        }
+        return null;
     }
 
     public void update(Building editedBuilding) {
-        buildingDAO.update(editedBuilding);
+        buildingDAO.save(editedBuilding);
     }
 
-    public void add(Building newBuilding) {
-        buildingDAO.add(newBuilding);
+    public void save(Building newBuilding) {
+        buildingDAO.save(newBuilding);
     }
 
     public void remove(long id) {
-        buildingDAO.remove(id);
+        buildingDAO.deleteById(id);
     }
 }

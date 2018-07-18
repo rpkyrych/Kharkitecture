@@ -14,8 +14,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RequestMapping("/building")
 public class BuildingController {
     private static final String BUILDING_PAGE = "/building";
-    @Autowired
     private BookService bookService;
+
+    @Autowired
+    public BuildingController(BookService bookService) {
+        this.bookService = bookService;
+    }
 
     @RequestMapping(value = "/", method = GET)
     public String getBuildingsList(Model model) {
@@ -31,7 +35,7 @@ public class BuildingController {
 
     @RequestMapping(value = "/", method = POST)
     public String addBuilding(Building newBuilding) {
-        bookService.add(newBuilding);
+        bookService.save(newBuilding);
         return "redirect:" + BUILDING_PAGE;
     }
 

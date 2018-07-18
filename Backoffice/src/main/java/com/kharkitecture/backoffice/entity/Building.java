@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "building")
@@ -14,7 +15,7 @@ public class Building {
     private long id;
     private String name;
     private String description;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "photo")
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Photo.class)
     private List<Photo> photos;
     @ManyToMany(targetEntity = Category.class)
     private List<Category> categories;
@@ -113,5 +114,20 @@ public class Building {
 
     public void setCategories(List<Category> categories) {
         this.categories = categories;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Building)) return false;
+        Building building = (Building) o;
+        return id == building.id &&
+                Objects.equals(name, building.name);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, name);
     }
 }

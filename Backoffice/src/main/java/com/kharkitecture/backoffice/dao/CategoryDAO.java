@@ -1,6 +1,6 @@
 package com.kharkitecture.backoffice.dao;
 
-import com.kharkitecture.backoffice.entity.Building;
+import com.kharkitecture.backoffice.entity.Category;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BuildingDAO extends CrudRepository<Building, Long>
+public interface CategoryDAO extends CrudRepository<Category, Long>
 {
-    Optional<Building> findById(Long id);
+    Optional<Category> findById(Long id);
 
-    Building save(Building building);
+    Category save(Category building);
 
     void deleteById(Long id);
 
     boolean existsById(Long id);
 
-    List<Building> findAll();
+    List<Category> findAll();
 }

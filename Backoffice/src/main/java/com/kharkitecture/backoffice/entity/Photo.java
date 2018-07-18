@@ -1,6 +1,7 @@
 package com.kharkitecture.backoffice.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "photo")
@@ -44,5 +45,20 @@ public class Photo {
 
     public void setBuilding(Building building) {
         this.building = building;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Photo)) return false;
+        Photo photo = (Photo) o;
+        return id == photo.id &&
+                Objects.equals(url, photo.url);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, url);
     }
 }
