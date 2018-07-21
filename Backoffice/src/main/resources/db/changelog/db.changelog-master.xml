@@ -50,4 +50,11 @@
 			</column>
 		</createTable>
 	</changeSet>
+	<changeSet id="2" author="vlad">
+		<addColumn tableName="photo">
+			<column name="small_size"  type="LONGBLOB"/>
+			<column name="middle_size" type="LONGBLOB"/>
+			<column name="large_size"  type="LONGBLOB"/>
+		</addColumn>
+	</changeSet>
 </databaseChangeLog>
