@@ -11,7 +11,7 @@ import java.util.Objects;
 public class Building {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     private String description;
     @OneToMany(fetch = FetchType.LAZY, targetEntity = Photo.class)
@@ -54,11 +54,11 @@ public class Building {
         return categories.add(category);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -99,7 +99,7 @@ public class Building {
         if (this == o) return true;
         if (!(o instanceof Building)) return false;
         Building building = (Building) o;
-        return id == building.id &&
+        return id.equals(building.id) &&
                 Objects.equals(name, building.name);
     }
 

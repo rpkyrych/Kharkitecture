@@ -6,6 +6,7 @@ import org.apache.logging.log4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -14,7 +15,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @Controller
 @RequestMapping("/building")
 public class BuildingController {
-    private static final String BUILDING_PAGE = "/building";
+    private static final String BUILDING_PAGE = "addObject";
     private static final Marker DB_MARKER = MarkerManager.getMarker("DATABASE");
     private BuildingService buildingService;
     private Logger logger;
@@ -26,6 +27,12 @@ public class BuildingController {
     }
 
     @RequestMapping(value = "/", method = GET)
+    public String getBuildingPage(Model model) {
+        model.addAttribute("building", new Building());
+        return BUILDING_PAGE;
+    }
+
+    @RequestMapping(value = "/all", method = GET)
     public String getBuildingsList(Model model) {
         model.addAttribute("buildings", buildingService.getBuildings());
         return BUILDING_PAGE;
@@ -42,21 +49,21 @@ public class BuildingController {
     }
 
     @RequestMapping(value = "/", method = POST)
-    public String addBuilding(Building newBuilding) {
-        buildingService.save(newBuilding);
-        return "redirect:" + BUILDING_PAGE;
+    public String addBuilding(@ModelAttribute("building") Building building) {
+        buildingService.save(building);
+        return "redirect:/" + BUILDING_PAGE;
     }
 
     @RequestMapping(value = "/", method = PUT)
     public String updateBuilding(Building editedBuilding) {
         buildingService.update(editedBuilding);
-        return "redirect:" + BUILDING_PAGE;
+        return "redirect:/" + BUILDING_PAGE;
     }
 
     @RequestMapping(value = "/{id}", method = DELETE)
     public String removeBuilding(@PathVariable long id) {
         buildingService.remove(id);
-        return "redirect:" + BUILDING_PAGE;
+        return "redirect:/" + BUILDING_PAGE;
     }
 
 
