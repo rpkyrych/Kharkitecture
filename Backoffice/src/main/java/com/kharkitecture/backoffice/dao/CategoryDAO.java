@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CategoryDAO extends CrudRepository<Category, Long>
-{
+public interface CategoryDAO extends CrudRepository<Category, Long> {
     Optional<Category> findById(Long id);
 
-    Category save(Category building);
+    Category save(Category category);
 
     void deleteById(Long id);
 

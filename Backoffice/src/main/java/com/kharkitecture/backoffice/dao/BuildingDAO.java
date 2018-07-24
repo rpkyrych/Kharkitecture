@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BuildingDAO extends CrudRepository<Building, Long>
-{
+public interface BuildingDAO extends CrudRepository<Building, Long> {
     Optional<Building> findById(Long id);
 
     Building save(Building building);
