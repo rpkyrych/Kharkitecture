@@ -9,32 +9,32 @@ import java.util.Objects;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private String characteristic;
+    private Long id;
+    private String name;
     @ManyToMany(targetEntity = Building.class)
     private List<Building> buildingList;
 
     public Category() {
     }
 
-    public Category(String characteristic) {
-        this.characteristic = characteristic;
+    public Category(String name) {
+        this.name = name;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getCharacteristic() {
-        return characteristic;
+    public String getName() {
+        return name;
     }
 
-    public void setCharacteristic(String characteristic) {
-        this.characteristic = characteristic;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<Building> getBuildingList() {
@@ -51,12 +51,12 @@ public class Category {
         if (!(o instanceof Category)) return false;
         Category category = (Category) o;
         return id == category.id &&
-                Objects.equals(characteristic, category.characteristic);
+                Objects.equals(name, category.name);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, characteristic);
+        return Objects.hash(id, name);
     }
 }

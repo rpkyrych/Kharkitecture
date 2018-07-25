@@ -12,7 +12,7 @@ public interface CategoryDAO extends CrudRepository<Category, Long>
 {
     Optional<Category> findById(Long id);
 
-    Category save(Category building);
+    Category save(Category category);
 
     void deleteById(Long id);
 

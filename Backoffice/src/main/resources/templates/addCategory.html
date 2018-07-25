@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <html>
 <head>
 	<meta charset="utf-8">
@@ -88,14 +89,16 @@
 
 
 <div class="container">
-  <h3>Новая категория</h3>  
-  <form>
-    <div class="form-group">
-      <label>Добавьте название категории</label>
-      <input type="text" class="form-control" name="name" maxlength="50">
-      <small class="form-text text-muted">Не более 50 символов.</small>
-    </div> 
-    <button type="submit" class="btn btn-primary">Сохранить</button> 
+    <h3>Новая категория</h3>
+    <form action="#" th:action="@{/category/}" th:object="${category}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Добавьте название категории</label>
+            <input type="text" th:field="*{name}" id="name" class="form-control" maxlength="50"
+                   required/>
+            <small class="form-text text-muted">Не более 50 символов.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
 </div>
 	
 </form>
