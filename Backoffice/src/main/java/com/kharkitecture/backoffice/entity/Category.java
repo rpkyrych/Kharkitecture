@@ -9,7 +9,7 @@ import java.util.Objects;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String characteristic;
     @ManyToMany(targetEntity = Building.class)
     private List<Building> buildingList;
@@ -21,11 +21,11 @@ public class Category {
         this.characteristic = characteristic;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
