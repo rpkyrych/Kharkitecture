@@ -18,5 +18,9 @@ public interface PhotoDAO extends CrudRepository<Photo, Long>
 
     boolean existsById(Long id);
 
+    boolean existsByOriginalSize(byte[] originalSize);
+
+    Photo findByOriginalSize(byte[] originalSize);
+
     List<Photo> findAll();
 }
