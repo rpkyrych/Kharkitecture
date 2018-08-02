@@ -57,11 +57,4 @@
 			<column name="large_size"  type="LONGBLOB"/>
 		</addColumn>
 	</changeSet>
-	<changeSet id="333" author="vladyslav">
-		<addColumn tableName="photo">
-			<column name="original_size"  type="LONGBLOB"/>
-		</addColumn>
-		<dropColumn columnName="image"
-					tableName="photo"/>
-	</changeSet>
 </databaseChangeLog>
