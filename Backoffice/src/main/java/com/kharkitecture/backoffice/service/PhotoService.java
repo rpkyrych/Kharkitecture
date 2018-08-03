@@ -2,16 +2,20 @@ package com.kharkitecture.backoffice.service;
 
 import com.kharkitecture.backoffice.dao.PhotoDAO;
 import com.kharkitecture.backoffice.entity.Photo;
+import liquibase.util.file.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 public class PhotoService {
@@ -23,11 +27,30 @@ public class PhotoService {
     public static final int MIDDLE_SIZE_PHOTO = 480;
     public static final int LARGE_SIZE_PHOTO = 720;
 
-    //The method of checking the value of a photo in the database
-    //returns a new photo object if the photo is not in the database
-    Photo givePhoto(byte[] photo){
-        if(photoDAO.existsByOriginalSize(photo)) return photoDAO.findByOriginalSize(photo);
-        else return new Photo(photo);
+    public boolean handleFileUpload(MultipartFile file) {
+        this.log = LogManager.getLogger(this.getClass());
+        try {
+            if (file.isEmpty()) {
+                log.error("Failed photo uploading. The image is missing");
+                throw new Exception();
+            }
+            String extension = FilenameUtils.getExtension(file.getOriginalFilename()); //find the file extension
+            if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("bmp") && !extension.equals("png"))
+                throw new Exception();
+
+            InputStream in = new ByteArrayInputStream(file.getBytes());
+            BufferedImage bufferedImage = ImageIO.read(in);
+            //write to db
+            addPhoto(bufferedImage, extension);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, extension, os);
+            os.close();
+            in.close();
+            return true;
+        } catch (Exception e) {
+            log.error("You were unable to upload an image");
+        }
+        return false;
     }
 
     public boolean addPhoto(BufferedImage image, String extension) {
@@ -58,11 +81,19 @@ public class PhotoService {
             ostream.close();
             return true;
         } catch (IOException e) {
-            log.error(e.getMessage()+" There was an error changing the size and writing to the image database\n");
+            log.error(e.getMessage() + " There was an error changing the size and writing to the image database\n");
             return false;
         }
     }
 
+    //The method of checking the value of a photo in the database
+    //returns a new photo object if the photo is not in the database
+    Photo givePhoto(byte[] photo) {
+        if (photoDAO.existsByOriginalSize(photo)) return photoDAO.findByOriginalSize(photo);
+        else return new Photo(photo);
+    }
+
+    //methods for resize image
     public BufferedImage scaleImage(BufferedImage img, int heigthAndWidth) {
         int width, height = heigthAndWidth;
         width = height;
@@ -87,7 +118,7 @@ public class PhotoService {
         return newImage;
     }
 
-    public BufferedImage scaleImage(BufferedImage img,int height, int width) {
+    public BufferedImage scaleImage(BufferedImage img, int height, int width) {
         int imgWidth = img.getWidth();
         int imgHeight = img.getHeight();
         if (imgWidth * height < imgHeight * width) {
