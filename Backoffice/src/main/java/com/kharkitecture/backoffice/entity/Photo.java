@@ -8,6 +8,7 @@ import java.util.Objects;
 public class Photo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_photo")
     private long id;
     private String image;
     @ManyToOne(targetEntity = Building.class)
