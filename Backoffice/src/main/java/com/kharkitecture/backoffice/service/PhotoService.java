@@ -27,8 +27,11 @@ public class PhotoService {
     public static final int MIDDLE_SIZE_PHOTO = 480;
     public static final int LARGE_SIZE_PHOTO = 720;
 
-    public boolean handleFileUpload(MultipartFile file) {
+    public PhotoService() {
         this.log = LogManager.getLogger(this.getClass());
+    }
+
+    public boolean handleFileUpload(MultipartFile file) {
         try {
             if (file.isEmpty()) {
                 log.error("Failed photo uploading. The image is missing");
@@ -38,26 +41,27 @@ public class PhotoService {
             if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("bmp") && !extension.equals("png"))
                 throw new Exception();
 
-            InputStream in = new ByteArrayInputStream(file.getBytes());
-            BufferedImage bufferedImage = ImageIO.read(in);
-            //write to db
-            addPhoto(bufferedImage, extension);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, extension, os);
-            os.close();
-            in.close();
-            return true;
+            try (InputStream in = new ByteArrayInputStream(file.getBytes());
+                 ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+                BufferedImage bufferedImage = ImageIO.read(in);
+                //write to db
+                addPhotoInDB(bufferedImage, extension);
+                ImageIO.write(bufferedImage, extension, os);
+                return true;
+            }
         } catch (Exception e) {
             log.error("You were unable to upload an image");
         }
         return false;
     }
 
-    public boolean addPhoto(BufferedImage image, String extension) {
-        this.log = LogManager.getLogger(this.getClass());
+    public boolean addPhotoInDB(BufferedImage image, String extension) {
         int[] imageSize = {SMALL_SIZE_PHOTO, MIDDLE_SIZE_PHOTO, LARGE_SIZE_PHOTO};
         ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-        Photo photo = givePhoto(ostream.toByteArray());//check and return photo is exist in db or return new photo
+        byte[] bytesOriginalPhoto = ostream.toByteArray();
+        Photo photo;
+        if (!isFullPhotoExistsInDB(bytesOriginalPhoto)) photo = new Photo(bytesOriginalPhoto);
+        else return true;
 
         try {
             for (int i = 0; i < imageSize.length; i++) {
@@ -86,15 +90,18 @@ public class PhotoService {
         }
     }
 
-    //The method of checking the value of a photo in the database
-    //returns a new photo object if the photo is not in the database
-    Photo givePhoto(byte[] photo) {
-        if (photoDAO.existsByOriginalSize(photo)) return photoDAO.findByOriginalSize(photo);
-        else return new Photo(photo);
+    //The method of checking the all values of a photo in the database
+    private boolean isFullPhotoExistsInDB(byte[] bytesPhoto) {
+        if (photoDAO.existsByOriginalSize(bytesPhoto)) {
+            Photo photo = photoDAO.findByOriginalSize(bytesPhoto);
+            if (photo.getSmallSize() == null || photo.getMiddleSize() == null || photo.getLargeSize() == null)
+                return false;
+            return true;
+        } else return false;
     }
 
     //methods for resize image
-    public BufferedImage scaleImage(BufferedImage img, int heigthAndWidth) {
+    private BufferedImage scaleImage(BufferedImage img, int heigthAndWidth) {
         int width, height = heigthAndWidth;
         width = height;
         int imgWidth = img.getWidth();
@@ -107,18 +114,11 @@ public class PhotoService {
         BufferedImage newImage = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = newImage.createGraphics();
-        try {
-            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                    RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            g.clearRect(0, 0, width, height);
-            g.drawImage(img, 0, 0, width, height, null);
-        } finally {
-            g.dispose();
-        }
+        renderingImage(g, img, height, width);
         return newImage;
     }
 
-    public BufferedImage scaleImage(BufferedImage img, int height, int width) {
+    private BufferedImage scaleImage(BufferedImage img, int height, int width) {
         int imgWidth = img.getWidth();
         int imgHeight = img.getHeight();
         if (imgWidth * height < imgHeight * width) {
@@ -129,6 +129,11 @@ public class PhotoService {
         BufferedImage newImage = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = newImage.createGraphics();
+        renderingImage(g, img, height, width);
+        return newImage;
+    }
+
+    private void renderingImage(Graphics2D g, BufferedImage img, int height, int width) {
         try {
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                     RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -137,7 +142,6 @@ public class PhotoService {
         } finally {
             g.dispose();
         }
-        return newImage;
     }
 
 }
