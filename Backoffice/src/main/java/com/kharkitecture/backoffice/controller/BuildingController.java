@@ -1,7 +1,6 @@
 package com.kharkitecture.backoffice.controller;
 
 import com.kharkitecture.backoffice.entity.Building;
-import com.kharkitecture.backoffice.entity.Photo;
 import com.kharkitecture.backoffice.service.BuildingService;
 import org.apache.logging.log4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @Controller
 @RequestMapping("/building")
 public class BuildingController {
-    private static final String BUILDING_PAGE = "addObject";
+    private static final String ADD_BUILDING_PAGE = "addObject";
+    private static final String VIEW_ALL_BUILDINGS_PAGE = "allBuildings";
     private static final Marker DB_MARKER = MarkerManager.getMarker("DATABASE");
     private BuildingService buildingService;
     private Logger logger;
@@ -34,13 +32,13 @@ public class BuildingController {
     @RequestMapping(value = "/", method = GET)
     public String getBuildingPage(Model model) {
         model.addAttribute("building", new Building());
-        return BUILDING_PAGE;
+        return ADD_BUILDING_PAGE;
     }
 
     @RequestMapping(value = "/all", method = GET)
     public String getBuildingsList(Model model) {
         model.addAttribute("buildings", buildingService.getBuildings());
-        return BUILDING_PAGE;
+        return VIEW_ALL_BUILDINGS_PAGE;
     }
 
     @RequestMapping(value = "/{id}", method = GET)
@@ -50,7 +48,7 @@ public class BuildingController {
         } catch (ClassNotFoundException e) {
             logger.log(Level.ERROR, DB_MARKER, "Finding building in db exception.", e);
         }
-        return BUILDING_PAGE;
+        return ADD_BUILDING_PAGE;
     }
 
     @RequestMapping(value = "/", method = POST)

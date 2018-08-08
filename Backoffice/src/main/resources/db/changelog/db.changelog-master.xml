@@ -38,7 +38,8 @@
 		</createTable>
 		<createTable tableName="category_building">
 			<column name="category_id" type="int">
-				<constraints foreignKeyName="fk_category_category_building"
+				<constraints nullable="false"
+					foreignKeyName="fk_category_category_building"
 					references="category(id)" />
 			</column>
 			<column name="building_id" type="int">

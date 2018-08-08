@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Adminka</title>
+	<title>View All Building Page</title>
 
 	<!-- Bootstrap -->
 	<!-- Latest compiled and minified Bootstrap CSS -->
@@ -28,69 +28,6 @@
 	<link href="../static/css/main.css" rel="stylesheet">
 </head>
 
-<body onLoad="buildHtmlTable('#excelDataTable')">
-
-<script>
-    var demoList = [
-        {
-            "image": "https://photosp.ru/images/2018/04/04/KOTIK-BASENKA-62.jpg",
-            "id": "1",
-            "name": "Demo Building 1",
-            "categories": "Category 1, Category 2"
-        },
-        {
-            "image": "https://prohvost.club/wp-content/uploads/2018/03/kotenok-gryzet-palec-600x375.jpg",
-            "id": "2",
-            "name": "Demo Building 2",
-            "categories": "Category 1"
-        },
-        {
-            "image": "https://prohvost.club/wp-content/uploads/2018/03/kotenok-v-perenoske-1-600x338.jpg",
-            "id": "3",
-            "name": "Demo Building 3",
-            "categories": "Category 1, Category 2, Category 3"
-        }
-    ];
-
-    // Builds the HTML Table out of demoList.
-    function buildHtmlTable(selector) {
-        var columns = addAllColumnHeaders(demoList, selector);
-
-        for (var i = 0; i < demoList.length; i++) {
-            var row$ = $('<tr/>');
-            for (var colIndex = 0; colIndex < columns.length; colIndex++) {
-                var cellValue = demoList[i][columns[colIndex]];
-                if (cellValue == null) cellValue = "";
-                if (colIndex === 0) {
-                    cellValue = "<img class='building-image' src='" + cellValue + "'/>";
-                }
-                row$.append($('<td/>').html(cellValue));
-            }
-            $(selector).append(row$);
-        }
-    }
-
-    // Adds a header row to the table and returns the set of columns.
-    // Need to do union of keys from all records as some records may not contain
-    // all records.
-    function addAllColumnHeaders(demoList, selector) {
-        var columnSet = [];
-        var headerTr$ = $('<tr/>');
-
-        for (var i = 0; i < demoList.length; i++) {
-            var rowHash = demoList[i];
-            for (var key in rowHash) {
-                if ($.inArray(key, columnSet) === -1) {
-                    columnSet.push(key);
-                    headerTr$.append($('<th/>').html(key));
-                }
-            }
-        }
-        $(selector).append(headerTr$);
-
-        return columnSet;
-    }
-</script>
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-info text-white" id="option">
 	<a class="navbar-brand" href="#">Kharkitecture</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -110,7 +47,7 @@
 					Building
 				</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<a class="dropdown-item" href="#">View</a>
+					<a class="dropdown-item" href="/building/all">View</a>
 					<a class="dropdown-item" href="/building/">Add</a>
 					<a class="dropdown-item" href="#">Edit</a>
 					<div class="dropdown-divider"></div>
@@ -148,6 +85,24 @@
 </nav>
 
 <table id="excelDataTable" border="1">
+	<tr>
+		<th>id</th>
+		<th>Small Photo</th>
+		<th>Name</th>
+		<th>Description</th>
+		<th>Categories</th>
+	</tr>
+	<tr th:each="building : ${buildings}">
+		<td th:text="${building.id}"></td>
+		<td th:if="${!building.photos.isEmpty()} ? (${building.photos.get(0).smallSize}) : 'none'"></td>
+		<td th:text="${building.name}"></td>
+		<td th:text="${building.description}"></td>
+		<td th:if="${!building.categories.isEmpty()}">
+			<th:block th:each="categorie : ${building.categories}">
+				<p th:text="${categorie.name}"></p>
+			</th:block>
+		</td>
+	</tr>
 </table>
 
 <footer>
