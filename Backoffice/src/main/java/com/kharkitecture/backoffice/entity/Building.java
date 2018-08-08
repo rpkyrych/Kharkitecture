@@ -7,16 +7,15 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "building")
 public class Building {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Photo.class)
+    @OneToMany(mappedBy = "building", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Photo> photos;
-    @ManyToMany(targetEntity = Category.class)
+    @ManyToMany(mappedBy = "building", fetch = FetchType.EAGER)
     private List<Category> categories;
 
     public Building() {
@@ -54,6 +53,7 @@ public class Building {
         return categories.add(category);
     }
 
+    @Column(name = "id")
     public Long getId() {
         return id;
     }

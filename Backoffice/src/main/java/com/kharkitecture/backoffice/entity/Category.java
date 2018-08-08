@@ -5,13 +5,16 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "category")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @ManyToMany(targetEntity = Building.class)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "category_building",
+            joinColumns = {@JoinColumn(name = "category_id")},
+            inverseJoinColumns = {@JoinColumn(name = "building_id")
+            })
     private List<Building> buildingList;
 
     public Category() {

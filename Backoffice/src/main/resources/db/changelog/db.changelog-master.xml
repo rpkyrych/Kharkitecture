@@ -6,7 +6,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 	<changeSet id="1" author="ihor">
 		<createTable tableName="building">
-			<column name="id_building" type="int" autoIncrement="true">
+			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
 			<column name="name" type="varchar(1024)">
@@ -17,20 +17,19 @@
 			</column>
 		</createTable>
 		<createTable tableName="photo">
-			<column name="id_photo" type="int" autoIncrement="true">
+			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
-			<column name="id.building" type="int">
-				<constraints nullable="false"
-					foreignKeyName="fk_photo_building"
-					references="building(id_building)" />
+			<column name="building_id" type="int">
+				<constraints foreignKeyName="fk_photo_building"
+					references="building(id)" />
 			</column>
 			<column name="image" type="LONGBLOB">
 				<constraints nullable="true" />
 			</column>
 		</createTable>
 		<createTable tableName="category">
-			<column name="id_category" type="int" autoIncrement="true">
+			<column name="id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
 			<column name="name" type="varchar(50)">
@@ -38,15 +37,14 @@
 			</column>
 		</createTable>
 		<createTable tableName="category_building">
-			<column name="id_category" type="int">
-				<constraints nullable="false"
-					foreignKeyName="fk_category_category_building"
-					references="category(id_category)" />
+			<column name="category_id" type="int">
+				<constraints foreignKeyName="fk_category_category_building"
+					references="category(id)" />
 			</column>
-			<column name="id_building" type="int">
+			<column name="building_id" type="int">
 				<constraints nullable="false"
 					foreignKeyName="fk_category_building_building"
-					references="building(id_building)" />
+					references="building(id)" />
 			</column>
 		</createTable>
 	</changeSet>

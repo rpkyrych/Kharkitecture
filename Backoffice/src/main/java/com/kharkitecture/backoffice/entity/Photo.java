@@ -5,13 +5,12 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
-@Table(name = "photo")
 public class Photo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_photo")
-    private long id;
-    @ManyToOne(targetEntity = Building.class)
+    private Long id;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "building_id")
     private Building building;
     @Column(name = "original_size")
     byte[] originalSize;
@@ -24,6 +23,7 @@ public class Photo {
 
     public Photo() {
     }
+
     public Photo(Building building, byte[] originalSize) {
         this.building = building;
         this.originalSize = originalSize;
@@ -65,11 +65,11 @@ public class Photo {
         this.largeSize = largeSize;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -86,7 +86,7 @@ public class Photo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Photo photo = (Photo) o;
-        return id == photo.id &&
+        return id.equals(photo.id) &&
                 Arrays.equals(originalSize, photo.originalSize);
     }
 

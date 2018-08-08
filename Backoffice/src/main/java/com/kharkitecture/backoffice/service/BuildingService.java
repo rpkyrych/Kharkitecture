@@ -4,6 +4,7 @@ import com.kharkitecture.backoffice.dao.BuildingDAO;
 import com.kharkitecture.backoffice.entity.Building;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,10 +12,12 @@ import java.util.Optional;
 @Service
 public class BuildingService {
     private BuildingDAO buildingDAO;
+    private PhotoService photoService;
 
     @Autowired
-    public BuildingService(BuildingDAO buildingDAO) {
+    public BuildingService(BuildingDAO buildingDAO, PhotoService photoService) {
         this.buildingDAO = buildingDAO;
+        this.photoService = photoService;
     }
 
     public List<Building> getBuildings() {
@@ -33,7 +36,10 @@ public class BuildingService {
         buildingDAO.save(editedBuilding);
     }
 
-    public void save(Building newBuilding) {
+    public void save(Building newBuilding, MultipartFile[] images) {
+        if (images != null) {
+            photoService.addResizedPhotosToBuilding(newBuilding, images);
+        }
         buildingDAO.save(newBuilding);
     }
 

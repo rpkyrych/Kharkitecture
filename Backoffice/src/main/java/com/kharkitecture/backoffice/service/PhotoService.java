@@ -1,6 +1,7 @@
 package com.kharkitecture.backoffice.service;
 
 import com.kharkitecture.backoffice.dao.PhotoDAO;
+import com.kharkitecture.backoffice.entity.Building;
 import com.kharkitecture.backoffice.entity.Photo;
 import liquibase.util.file.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
+import java.util.ArrayList;
 
 @Service
 public class PhotoService {
@@ -31,42 +34,44 @@ public class PhotoService {
         this.log = LogManager.getLogger(this.getClass());
     }
 
-    public boolean handleFileUpload(MultipartFile file) {
-        try {
-            if (file.isEmpty()) {
-                log.error("Failed photo uploading. The image is missing");
-                throw new Exception();
-            }
-            String extension = FilenameUtils.getExtension(file.getOriginalFilename()); //find the file extension
-            if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("bmp") && !extension.equals("png"))
-                throw new Exception();
-
-            try (InputStream in = new ByteArrayInputStream(file.getBytes());
-                 ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-                BufferedImage bufferedImage = ImageIO.read(in);
-                //write to db
-                addPhotoInDB(bufferedImage, extension);
-                ImageIO.write(bufferedImage, extension, os);
-                return true;
-            }
-        } catch (Exception e) {
-            log.error("You were unable to upload an image");
+    public Photo handleFileUpload(MultipartFile file) {
+        if (!isPhotoExistsAndHaveCorrectExtension(file)) {
+            return new Photo();
         }
-        return false;
+        return photoDAO.save(getResizedPhoto(file));
     }
 
-    public boolean addPhotoInDB(BufferedImage image, String extension) {
-        int[] imageSize = {SMALL_SIZE_PHOTO, MIDDLE_SIZE_PHOTO, LARGE_SIZE_PHOTO};
-        ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-        byte[] bytesOriginalPhoto = ostream.toByteArray();
-        Photo photo;
-        if (!isFullPhotoExistsInDB(bytesOriginalPhoto)) photo = new Photo(bytesOriginalPhoto);
-        else return true;
+    public void addResizedPhotosToBuilding(Building newBuilding, MultipartFile[] images) {
+        ArrayList<Photo> photoList = new ArrayList<>();
+        for (MultipartFile image : images) {
+            if (isPhotoExistsAndHaveCorrectExtension(image)) {
+                photoList.add(getResizedPhoto(image));
+            }
+        }
+        if (!photoList.isEmpty()) {
+            newBuilding.setPhotos(photoList);
+        }
+    }
 
-        try {
+    private Photo getResizedPhoto(MultipartFile file) {
+        Photo photo = new Photo();
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        int[] imageSize = {SMALL_SIZE_PHOTO, MIDDLE_SIZE_PHOTO, LARGE_SIZE_PHOTO};
+
+        try (InputStream in = new ByteArrayInputStream(file.getBytes());
+             ByteArrayOutputStream ostream = new ByteArrayOutputStream()) {
+
+            BufferedImage bufferedImage = ImageIO.read(in);
+            ImageIO.write(bufferedImage, extension, ostream);
+            byte[] bytesOriginalPhoto = ostream.toByteArray();
+
+            if (!isFullPhotoExistsInDB(bytesOriginalPhoto)) {
+                photo = new Photo(bytesOriginalPhoto);
+            } else throw new FileAlreadyExistsException("Such photo already exists in the database");
+
             for (int i = 0; i < imageSize.length; i++) {
-                image = scaleImage(image, imageSize[i]); //return new resized image
-                ImageIO.write(image, extension, ostream);
+                bufferedImage = scaleImage(bufferedImage, imageSize[i]); //return new resized image
+                ImageIO.write(bufferedImage, extension, ostream);
                 switch (i) {
                     case (0):
                         photo.setSmallSize(ostream.toByteArray());
@@ -80,14 +85,10 @@ public class PhotoService {
                 }
                 ostream.reset();
             }
-
-            photoDAO.save(photo);
-            ostream.close();
-            return true;
         } catch (IOException e) {
             log.error(e.getMessage() + " There was an error changing the size and writing to the image database\n");
-            return false;
         }
+        return photo;
     }
 
     //The method of checking the all values of a photo in the database
@@ -101,8 +102,8 @@ public class PhotoService {
     }
 
     //methods for resize image
-    private BufferedImage scaleImage(BufferedImage img, int heigthAndWidth) {
-        int width, height = heigthAndWidth;
+    private BufferedImage scaleImage(BufferedImage img, int maxHeightAndWidth) {
+        int width, height = maxHeightAndWidth;
         width = height;
         int imgWidth = img.getWidth();
         int imgHeight = img.getHeight();
@@ -111,8 +112,7 @@ public class PhotoService {
         } else {
             height = imgHeight * width / imgWidth;
         }
-        BufferedImage newImage = new BufferedImage(width, height,
-                BufferedImage.TYPE_INT_RGB);
+        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = newImage.createGraphics();
         renderingImage(g, img, height, width);
         return newImage;
@@ -126,8 +126,7 @@ public class PhotoService {
         } else {
             height = imgHeight * width / imgWidth;
         }
-        BufferedImage newImage = new BufferedImage(width, height,
-                BufferedImage.TYPE_INT_RGB);
+        BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = newImage.createGraphics();
         renderingImage(g, img, height, width);
         return newImage;
@@ -144,4 +143,19 @@ public class PhotoService {
         }
     }
 
+    private boolean isPhotoExistsAndHaveCorrectExtension(MultipartFile image) {
+        try {
+            if (image.isEmpty()) {
+                log.error("Failed photo uploading. The image is missing");
+                throw new Exception();
+            }
+            String extension = FilenameUtils.getExtension(image.getOriginalFilename()); //find the file extension
+            if (!extension.equals("jpg") && !extension.equals("jpeg") && !extension.equals("bmp") && !extension.equals("png"))
+                throw new Exception();
+        } catch (Exception e) {
+            log.error("You were unable to upload an image");
+            return false;
+        }
+        return true;
+    }
 }
