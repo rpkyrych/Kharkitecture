@@ -15,7 +15,11 @@ public class Building {
     private String description;
     @OneToMany(mappedBy = "building", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Photo> photos;
-    @ManyToMany(mappedBy = "building", fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "category_building",
+            joinColumns = {@JoinColumn(name = "building_id")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id")
+            })
     private List<Category> categories;
 
     public Building() {
