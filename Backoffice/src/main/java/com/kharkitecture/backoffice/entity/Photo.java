@@ -9,8 +9,7 @@ public class Photo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "building_id")
+    @ManyToOne
     private Building building;
     @Column(name = "original_size")
     byte[] originalSize;

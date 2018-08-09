@@ -13,7 +13,8 @@ public class Building {
     private Long id;
     private String name;
     private String description;
-    @OneToMany(mappedBy = "building", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade ={CascadeType.ALL})
+    @JoinColumn(name = "building_id")
     private List<Photo> photos;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "category_building",
@@ -41,13 +42,6 @@ public class Building {
         this.description = description;
         this.photos = photos;
         this.categories = categories;
-    }
-
-    public boolean addPhotoURL(Photo url) {
-        if (photos == null) {
-            photos = new ArrayList<>();
-        }
-        return photos.add(url);
     }
 
     public boolean addCategory(Category category) {
@@ -83,7 +77,7 @@ public class Building {
     }
 
     public List<Photo> getPhotos() {
-        return photos != null ? photos : Collections.emptyList();
+        return photos;
     }
 
     public void setPhotos(List<Photo> photos) {

@@ -28,6 +28,7 @@
 	<link href="../static/css/main.css" rel="stylesheet">
 </head>
 
+<body>
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-info text-white" id="option">
 	<a class="navbar-brand" href="#">Kharkitecture</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -94,7 +95,9 @@
 	</tr>
 	<tr th:each="building : ${buildings}">
 		<td th:text="${building.id}"></td>
-		<td th:if="${!building.photos.isEmpty()} ? (${building.photos.get(0).smallSize}) : 'none'"></td>
+		<td th:if="${!building.photos.isEmpty()}">
+			<img th:src="@{'data:image/jpeg;base64,'+${building.photos.get(0).smallSize}}">
+		</td>
 		<td th:text="${building.name}"></td>
 		<td th:text="${building.description}"></td>
 		<td th:if="${!building.categories.isEmpty()}">
@@ -108,4 +111,4 @@
 <footer>
 </footer>
 </body>
- 
+</html>
