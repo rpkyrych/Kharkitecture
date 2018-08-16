@@ -25,11 +25,7 @@ public class BuildingService {
     }
 
     public Building getBuilding(long id) throws ClassNotFoundException {
-        Optional<Building> optionalBuilding = buildingDAO.findById(id);
-        if (optionalBuilding.isPresent()) {
-            return optionalBuilding.get();
-        }
-        else{ throw new ClassNotFoundException("Building with such id not found!");}
+        return Optional.of(buildingDAO.findById(id)).map(Optional::get).orElseThrow(ClassNotFoundException::new);
     }
 
     public void update(Building editedBuilding) {
