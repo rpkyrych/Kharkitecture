@@ -90,16 +90,17 @@
 		<th>id</th>
 		<th>Small Photo</th>
 		<th>Name</th>
-		<th>Description</th>
+        <th>Description</th>
 		<th>Categories</th>
 	</tr>
 	<tr th:each="building : ${buildings}">
 		<td th:text="${building.id}"></td>
 		<td th:if="${!building.photos.isEmpty()}">
-			<img th:src="@{'data:image/jpeg;base64,'+${building.photos.get(0).smallSize}}">
+			<img th:src="@{/building/image/{id}(id=${building.id})}" height="210"  width="280"/>
 		</td>
+        <td th:unless="${!building.photos.isEmpty()}"> Building doesn't have a photo</td>
 		<td th:text="${building.name}"></td>
-		<td th:text="${building.description}"></td>
+        <td th:text="${building.description}"></td>
 		<td th:if="${!building.categories.isEmpty()}">
 			<th:block th:each="categorie : ${building.categories}">
 				<p th:text="${categorie.name}"></p>
