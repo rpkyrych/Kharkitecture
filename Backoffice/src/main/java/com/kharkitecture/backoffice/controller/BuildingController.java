@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -62,11 +63,11 @@ public class BuildingController {
     @RequestMapping(value = "/{id}", method = GET)
     public String getBuilding(@PathVariable long id, Model model) {
         try {
-            model.addAttribute("building", buildingService.getBuilding(id));
+            model.addAttribute("buildings", Arrays.asList(buildingService.getBuilding(id)));
         } catch (ClassNotFoundException e) {
             logger.log(Level.ERROR, DB_MARKER, "Finding building in db exception.", e);
         }
-        return ADD_BUILDING_PAGE;
+        return VIEW_ALL_BUILDINGS_PAGE;
     }
 
     @RequestMapping(value = "/", method = POST)
