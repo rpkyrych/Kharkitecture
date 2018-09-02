@@ -1,12 +1,10 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<html>
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>AddCategory Page</title>
-
+	<title>View All Categories Page</title>
 
 	<!-- Bootstrap -->
 	<!-- Latest compiled and minified Bootstrap CSS -->
@@ -27,9 +25,9 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
 	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 	        crossorigin="anonymous"></script>
-	<link href="main.css" rel="stylesheet">	
-	 	
+	<link href="../static/css/main.css" rel="stylesheet">
 </head>
+
 <body>
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-info text-white" id="option">
 	<a class="navbar-brand" href="#">Kharkitecture</a>
@@ -87,24 +85,20 @@
 	</div>
 </nav>
 
+<table id="excelDataTable" border="1">
+	<tr>
+		<th>id</th>
+		<th>Name</th>
+		<th>Total buildings</th>
+	</tr>
+	<tr th:each="category : ${categories}">
+		<td th:text="${category.id}"></td>
+		<td th:text="${category.name}"></td>
+		<td th:text="${category.totalItemsCount}"></td>
+	</tr>
+</table>
 
-<div class="container">
-    <h3>Новая категория</h3>
-    <form action="#" th:action="@{/category/}" th:object="${category}" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="name">Добавьте название категории</label>
-            <input type="text" th:field="*{name}" id="name" class="form-control" maxlength="50"
-                   required/>
-            <small class="form-text text-muted">Не более 50 символов.</small>
-        </div>
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-    </form>
-</div>
-	
-</form>
-</div>
-
-	<footer>
-		
-	</footer>
+<footer>
+</footer>
 </body>
+</html>
